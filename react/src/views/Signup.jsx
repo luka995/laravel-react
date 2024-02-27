@@ -1,5 +1,5 @@
 import {Link} from "react-router-dom";
-import {useRef} from "react";
+import {useRef, useState} from "react";
 import axiosClient from "../axios-client.js";
 import {useStateContext} from "../contexts/ContextProvider.jsx";
 
@@ -7,8 +7,9 @@ export default function Signup() {
     const nameRef = useRef();
     const emailRef = useRef();
     const passwordRef = useRef();
-    const passfordConfirmationRef = useRef();
+    const passwordConfirmationRef = useRef();
 
+    const [errors, setErrors] = useState(null);
     const {setToken, setUser} = useStateContext();
 
     const onSubmit = (ev) => {
@@ -18,7 +19,7 @@ export default function Signup() {
             email: emailRef.current.value,
             password : passwordRef.current.value,
             //camelCase because of laravel
-            passford_confirmation: passfordConfirmationRef.current.value
+            password_confirmation: passwordConfirmationRef.current.value
         }
         //data is destructure from response obj, so this is why data is written inside {} - data is actual json obj
         //user info and token info
@@ -31,8 +32,8 @@ export default function Signup() {
             .catch(err => {
                 const response = err.response;
                 //validation error
-                if (response && response === 422) {
-                    console.log(response.data.errors);
+                if (response && response.status === 422) {
+                    setErrors(response.data.errors);
                 }
             })
     }
@@ -42,10 +43,17 @@ export default function Signup() {
             <div className="form">
                 <form onSubmit={onSubmit}>
                     <h1 className="title">Sign up</h1>
+                    {errors && <div className='alert'>
+                        {Object.keys(errors).map(key=> (
+                            <p key={key}>{errors[key][0]}</p>
+                        ))}
+                    </div>
+
+                    }
                     <input ref={nameRef} type="text" placeholder="Full name"/>
                     <input ref={emailRef} type="email" placeholder="Email"/>
                     <input ref={passwordRef} type="password" placeholder="Password"/>
-                    <input ref={passfordConfirmationRef} type="password" placeholder="Password again"/>
+                    <input ref={passwordConfirmationRef} type="password" placeholder="Password again"/>
                     <button type="submit" className="btn btn-block">Signup</button>
                     <p className="message">
                         Already have an account? <Link to="/login">Login</Link>

@@ -1,5 +1,6 @@
 import {Link, Navigate, Outlet} from "react-router-dom";
 import {useStateContext} from "../contexts/ContextProvider.jsx";
+import {useEffect} from "react";
 
 export default function DefaultLayout() {
     const {user, token} = useStateContext();
@@ -8,6 +9,10 @@ export default function DefaultLayout() {
         return <Navigate to="/login"/>
     }
 
+
+    useEffect(function () {
+
+    },[])
     const onLogout = (e) => {
         e.preventDefault();
     }

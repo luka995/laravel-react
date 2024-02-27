@@ -16,12 +16,17 @@ axiosClient.interceptors.response.use(
         return response;
     },
     (error) => {
-        //destructure only response from error
-        const {response} = error;
-        //token is probably expired or invalid
-        if (response.status === 401) {
-            localStorage.removeItem('ACCESS_TOKEN');
+        try{
+            //destructure only response from error
+            const {response} = error;
+            //token is probably expired or invalid
+            if (response.status === 401) {
+                localStorage.removeItem('ACCESS_TOKEN');
+            }
+        } catch (e) {
+            console.log(e);
         }
+
         throw error;
     }
 );
