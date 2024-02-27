@@ -50,10 +50,12 @@ class AuthController extends Controller
         ]);
     }
 
+    //this needs to be only available for auth user so wrap with sanctum in api route
+    //the user is null on $request->user() inside controller action logout
     public function logout(Request $request)
     {
         /* @var User $user*/
-        $user = $request->getUser();
+        $user = $request->user();
         $user->currentAccessToken()->delete();
 
         return response('', 204);
