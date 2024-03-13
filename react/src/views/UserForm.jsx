@@ -19,6 +19,7 @@ export default function UserForm() {
 
     const {setNotification} = useStateContext();
 
+    //bad, use contidion inside useEffect or in parent component
     if (id) {
         useEffect(()=> {
             setLoading(true);
