@@ -7,15 +7,26 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Http\Request;
+
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::paginate(10);
+        $query = User::query();
+
+        if ($request->has('search')) {
+            $searchTerm = $request->input('search');
+            $query->where('name', 'LIKE', "%$searchTerm%")
+                ->orWhere('email', 'LIKE', "%$searchTerm%");
+        }
+
+        $users = $query->paginate(10);
+
         return UserResource::collection($users);
     }
 

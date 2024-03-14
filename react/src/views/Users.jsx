@@ -2,22 +2,42 @@ import {useEffect, useState} from "react";
 import axiosClient from "../axios-client.js";
 import {Link} from "react-router-dom";
 import {useStateContext} from "../contexts/ContextProvider.jsx";
+import SearchUserInput from "./SearchUserInput.jsx";
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
 
 export default function Users() {
 
     const [users, setUsers] = useState([]);
+    const [metaPagination, setMetaPagination] = useState([]);
     const [loading, setLoading] = useState(false);
     const {setNotification} = useStateContext();
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const handleSearch = (searchTerm) => {
+        setSearchTerm(searchTerm); // Postavljanje searchTerm na novu vrednost
+        getUsers(searchTerm, currentPage); // Pozivanje getUsers sa prvom stranicom i novom vrednošću searchTerm-a
+    };
+
+    const handlePageChange = (event, value) => {
+        setCurrentPage(value);
+        getUsers(searchTerm, value); // Pozivamo getUsers sa trenutnom stranicom i terminom pretrage
+    };
+
 
     useEffect(()=>{
         getUsers();
     }, []);
 
-    const getUsers = () => {
+    const getUsers = (searchTerm, page) => {
+
         setLoading(true);
-        axiosClient.get('/users')
+        axiosClient.get(`/users?search=${searchTerm || ''}&page=${page || ''}`)
             .then(({data}) => {
-                setUsers(data.data)
+                setUsers(data.data);
+                setMetaPagination(data.meta);
                 setLoading(false);
                 console.log(data);
             })
@@ -41,6 +61,7 @@ export default function Users() {
         <div>
             <div style={{display:'flex', justifyContent: 'space-between', alignItems:'center'}}>
                 <h1>Users</h1>
+                <SearchUserInput searchTerm={searchTerm} onSearch={handleSearch} />
                 <Link to="/users/new" className='btn-add'>Add new</Link>
             </div>
             <div className='card animated fadeInDown'>
@@ -61,7 +82,7 @@ export default function Users() {
                     </tbody>}
                     {!loading &&<tbody>
                     {users.map(u => (
-                        <tr>
+                        <tr key={u.id}>
                             <td>{u.id}</td>
                             <td>{u.name}</td>
                             <td>{u.email}</td>
@@ -76,6 +97,9 @@ export default function Users() {
                     </tbody>
                     }
                 </table>
+                <Stack spacing={2} style={{ justifyContent: 'center', marginTop: '20px' }}>
+                    <Pagination count={metaPagination.last_page} page={currentPage} onChange={handlePageChange} />
+                </Stack>
             </div>
         </div>
     )
