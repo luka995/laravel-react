@@ -17,13 +17,13 @@ export default function Users() {
     const [searchTerm, setSearchTerm] = useState('');
 
     const handleSearch = (searchTerm) => {
-        setSearchTerm(searchTerm); // Postavljanje searchTerm na novu vrednost
-        getUsers(searchTerm, currentPage); // Pozivanje getUsers sa prvom stranicom i novom vrednošću searchTerm-a
+        setSearchTerm(searchTerm);
+        getUsers(searchTerm, currentPage);
     };
 
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
-        getUsers(searchTerm, value); // Pozivamo getUsers sa trenutnom stranicom i terminom pretrage
+        getUsers(searchTerm, value);
     };
 
 
