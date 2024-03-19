@@ -18,23 +18,22 @@ export default function Users() {
 
     const handleSearch = (searchTerm) => {
         setSearchTerm(searchTerm);
-        getUsers(searchTerm, currentPage);
+        setCurrentPage(1); // Resetujemo trenutnu stranicu na prvu prilikom pretrage
     };
 
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
-        getUsers(searchTerm, value);
     };
 
 
     useEffect(()=>{
         getUsers();
-    }, []);
+    }, [currentPage, searchTerm]);
 
-    const getUsers = (searchTerm, page) => {
+    const getUsers = () => {
 
         setLoading(true);
-        axiosClient.get(`/users?search=${searchTerm || ''}&page=${page || ''}`)
+        axiosClient.get(`/users?search=${searchTerm || ''}&page=${currentPage || ''}`)
             .then(({data}) => {
                 setUsers(data.data);
                 setMetaPagination(data.meta);
